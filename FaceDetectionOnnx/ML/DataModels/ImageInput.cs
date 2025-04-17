@@ -13,19 +13,19 @@ namespace FaceDetectionOnnx.ML.DataModels
             PrepareTensor(image);
         }
 
-        private void PrepareTensor(Bitmap bitmap)
+        private void PrepareTensor(Bitmap _bit)
         {
-            int inputWidth = ImageSettings.ImageWidth;
-            int inputHeight = ImageSettings.ImageHeight;
+            int inputW = ImageSettings.ImageWidth;
+            int inputH = ImageSettings.ImageHeight;
 
-            var resizedBitmap = new Bitmap(bitmap, new Size(inputWidth, inputHeight));
-            Tensor = new DenseTensor<float>(new[] { 1, 3, inputHeight, inputWidth });
+            var resizedBit = new Bitmap(_bit, new Size(inputW, inputH));
+            Tensor = new DenseTensor<float>(new[] { 1, 3, inputH, inputW });
 
-            for (int y = 0; y < inputHeight; y++)
+            for (int y = 0; y < inputH; y++)
             {
-                for (int x = 0; x < inputWidth; x++)
+                for (int x = 0; x < inputW; x++)
                 {
-                    Color pixel = resizedBitmap.GetPixel(x, y);
+                    Color pixel = resizedBit.GetPixel(x, y);
                     Tensor[0, 0, y, x] = pixel.R / 255f;
                     Tensor[0, 1, y, x] = pixel.G / 255f;
                     Tensor[0, 2, y, x] = pixel.B / 255f;

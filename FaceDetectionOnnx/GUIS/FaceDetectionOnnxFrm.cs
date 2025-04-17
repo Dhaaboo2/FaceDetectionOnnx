@@ -19,17 +19,15 @@ namespace FaceDetectionOnnx.GUIS
         private InferenceSession _session;
         [AllowNull]
         private OnnxOutputParser _outputParser;
-        [AllowNull]
-        private ImageInput _imginput;
-        [AllowNull]
-        private OpenFileDialog _odl;
+
         [AllowNull]
         private Bitmap loadedImage;
         public const float _NmsThreshold = 0.4f;
         public FaceDetectionOnnxFrm()
         {
             InitializeComponent();
-            _odl = new OpenFileDialog { Filter = "Image Files|*.jpg;*.png;*.bmp" };
+
+            _WorkSpace._odl = new OpenFileDialog { Filter = "Image Files|*.jpg;*.png;*.bmp" };
             LoadModel();
         }
         private void LoadModel()
@@ -39,7 +37,8 @@ namespace FaceDetectionOnnx.GUIS
                 var _Prodir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../", "ML"));
                 var _yolov8x = Path.Combine(_Prodir, "OnnxModels", "yolov8x-face-lindevs.onnx");
                 var options = new SessionOptions();
-                _session = new InferenceSession(_yolov8x, options);
+                _WorkSpace._session = new InferenceSession(_yolov8x, options);
+                //_session = new InferenceSession(_yolov8x, options);
                 _outputParser = new OnnxOutputParser();
                 MessageBox.Show("Model Loaded Successfully.");
             }
@@ -54,6 +53,7 @@ namespace FaceDetectionOnnx.GUIS
         {
             try
             {
+                var _odl = _WorkSpace._odl;
                 if (_odl.ShowDialog() == DialogResult.OK)
                 {
                     loadedImage = new Bitmap(_odl.FileName);
@@ -151,18 +151,5 @@ namespace FaceDetectionOnnx.GUIS
             PB.Image = bitmap;
         }
 
-        private void DrawBoxes(Bitmap bitmap, List<RectangleF> boxes)
-        {
-            var annotatedBitmap = new Bitmap(bitmap);
-            using var graphics = Graphics.FromImage(annotatedBitmap);
-            var pen = new Pen(Color.Red, 2);
-
-            foreach (var box in boxes)
-            {
-                graphics.DrawRectangle(pen, box.X, box.Y, box.Width, box.Height);
-            }
-
-            PB.Image = annotatedBitmap;
-        }
     }
 }
