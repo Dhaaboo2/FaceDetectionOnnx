@@ -16,8 +16,6 @@ namespace FaceDetectionOnnx.ML.DataModels
         public static OnnxOutputParser _outputParser { get; set; }
         [AllowNull]
         public static OpenFileDialog _odl { get; set; }
-        [AllowNull]
-        public static Bitmap loadedImage { get; set; }
         public const float _NmsThreshold = 0.4f; 
     }
 }

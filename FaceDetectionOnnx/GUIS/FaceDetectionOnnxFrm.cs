@@ -16,13 +16,11 @@ namespace FaceDetectionOnnx.GUIS
     public partial class FaceDetectionOnnxFrm : Form
     {
         [AllowNull]
-        private InferenceSession _session;
+        public Bitmap loadedImage;
         [AllowNull]
-        private OnnxOutputParser _outputParser;
-
+        public OnnxOutputParser _OutPar;
         [AllowNull]
-        private Bitmap loadedImage;
-        public const float _NmsThreshold = 0.4f;
+        public  InferenceSession _session;
         public FaceDetectionOnnxFrm()
         {
             InitializeComponent();
@@ -37,9 +35,10 @@ namespace FaceDetectionOnnx.GUIS
                 var _Prodir = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "../../../", "ML"));
                 var _yolov8x = Path.Combine(_Prodir, "OnnxModels", "yolov8x-face-lindevs.onnx");
                 var options = new SessionOptions();
-                _WorkSpace._session = new InferenceSession(_yolov8x, options);
-                //_session = new InferenceSession(_yolov8x, options);
-                _outputParser = new OnnxOutputParser();
+                //_WorkSpace._session = new InferenceSession(_yolov8x, options);
+                _session = new InferenceSession(_yolov8x, options);
+               // var _OutPar = _WorkSpace._outputParser;
+                _OutPar = new OnnxOutputParser();
                 MessageBox.Show("Model Loaded Successfully.");
             }
             catch (Exception ex)
@@ -56,6 +55,7 @@ namespace FaceDetectionOnnx.GUIS
                 var _odl = _WorkSpace._odl;
                 if (_odl.ShowDialog() == DialogResult.OK)
                 {
+                    
                     loadedImage = new Bitmap(_odl.FileName);
                     PB.Image = loadedImage;
                     //var image = Image.FromFile(_odl.FileName);
@@ -72,6 +72,7 @@ namespace FaceDetectionOnnx.GUIS
         {
             try
             {
+                
                 if (loadedImage == null)
                 {
                     MessageBox.Show("Please load an image first.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -112,9 +113,9 @@ namespace FaceDetectionOnnx.GUIS
 
             using var results = _session.Run(inputs);
             //var output = results.First().AsTensor<float>().ToArray();
-
-            var rawBoxes = _outputParser.ParseOutputs(results, image.Width, image.Height);
-            var finalBoxes = _outputParser.ApplyNms(rawBoxes, _NmsThreshold);
+            //var _OutPar = _WorkSpace._outputParser;
+            var rawBoxes = _OutPar.ParseOutputs(results, image.Width, image.Height);
+            var finalBoxes = _OutPar.ApplyNms(rawBoxes, _WorkSpace._NmsThreshold);
            // DrawPredictions(image, rawBoxes);
 
             return finalBoxes;
@@ -130,7 +131,8 @@ namespace FaceDetectionOnnx.GUIS
             };
 
             using var results = _session.Run(inputs);
-            var boxes = _outputParser.ParseOutputs(results, bitmap.Width, bitmap.Height);
+            //var _OutPar = _WorkSpace._outputParser;
+            var boxes = _OutPar.ParseOutputs(results, bitmap.Width, bitmap.Height);
             DrawPredictions(bitmap, boxes);
         }
 
